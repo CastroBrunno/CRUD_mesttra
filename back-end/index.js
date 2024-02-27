@@ -12,7 +12,7 @@ app.use(express.json());
 //inicializa a rota /products de acordo com meu arquivo do produto da rotas
 app.use('/products', productsRouter);
 
-//configurando minha primeira rota
+//configurando minha primeira rota  
 app.get('/', (req, res) => {
     setTimeout(() => {
         res.send('hello')

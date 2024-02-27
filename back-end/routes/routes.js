@@ -6,24 +6,35 @@ const router = express.Router();
 
 // [GET] Rota que lista todos os produtos
 router.get('/', async (req, res) =>{
-    const { rows } = await pool.query('select * from products');
-    res.send(rows); // ou pode usar products.rows (variavel se chama products)
+    try{
+        const { rows } = await pool.query('select * from products');
+        res.send(rows); // ou pode usar products.rows (variavel se chama products)
+    }catch (error){
+        console.error('Erro ao buscar produto', error);
+        res.status(500).json({
+            message: 'Erro durante a busca',
+            data: error
+        })
+    }
 })
 
 //[GET] Rota que lista produto especifico pelo ID
 router.get('/:id' , async (req,res) =>{
     const id = req.params.id;
-
-    const { rows } = await pool.query('select * from products where id = $1', [id]);
-
-    //metodo para verificar com vetores e verifica o seu id
-    // const product = products.find(product => product.id == id);
-
-    //verifico se existe o produto, se não existir, devolvo o codigo 404 com a mensagem "Product not found"
-    if(rows.length === 0) {
-        res.status(404).send('Product not found');
+    try {
+        const { rows } = await pool.query('select * from products where id = $1', [id]);
+        if(rows.length === 0) {
+            res.status(404).send('Product not found');
+        }else{
+            res.send(rows);
+        }
+    } catch (error) {
+        console.error('Erro ao buscar produto', error)
+        res.status(500).json({
+            message: 'Erro durante a busca',
+            data: error
+        })  
     }
-    res.send(rows);
 })
 
 //[POST] - Cadastra um novo produto
